@@ -1,0 +1,15 @@
+[package]
+name = "simple-http"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+infer = "0.16.0"
+url-escape = "0.1.1"
+mime_guess = "2.0.5"
+threadpool = "1.8.1"
+log = "0.4.22"
+env_logger = "0.11.5"
+html-escape = "0.2.13"
+percent-encoding = "2.1.0"
+walkdir = "2.5.0"
