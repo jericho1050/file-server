@@ -30,12 +30,10 @@ impl HttpResponse {
         let current_path = request.resource.path.clone();
         let mut response_body = Vec::new();
 
-        let rootcwd = std::env::current_dir()?;
-        let rootcwd_len = rootcwd.canonicalize()?.components().count();
+        let rootcwd = std::env::current_dir()?.canonicalize()?;
         let decoded_path = decode(&request.resource.path).into_owned();
         let resource_path = Path::new(&decoded_path);
-        let resource = rootcwd.join(resource_path);
-        let resource_len = resource.canonicalize()?.components().count();
+        let resource = rootcwd.join(&resource_path).canonicalize()?;
 
         // Ensure the new path is within the server root directory
         if !resource.starts_with(&rootcwd) {
@@ -86,7 +84,8 @@ impl HttpResponse {
                     let path = entry.path();
                     let display = path.file_name().unwrap_or_default().to_string_lossy().to_string();
                     let link = path.strip_prefix(&rootcwd).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.to_str().unwrap_or(&display);
-                    dir_listing.push_str(&format!("<a href=\"{}\">{}</a><br>", html_escape::encode_text(link), html_escape::encode_text(&display)));
+                    let link = format!("/{}", link.trim_start_matches('/')); // Ensure the link is correctly constructed
+                    dir_listing.push_str(&format!("<a href=\"{}\">{}</a><br>", html_escape::encode_text(&link), html_escape::encode_text(&display)));
                 }
 
                 content_length = dir_listing.len();
